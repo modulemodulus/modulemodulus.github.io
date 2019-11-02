@@ -1,12 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
+<meta charset="utf-8">
+
+<style>
+.link {stroke: black;}
+.node {stroke: white; stroke-width: 3px;}
+</style>
+
+<link rel="stylesheet" href="st.css">
 <body>
-    <h1>Hello Maza</h1>
+  <div>
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <input type="text" id = "N">
+  <input type="text" id="M">
+  <button onclick = "create()"> Generate </button>
+  
+</div>
+
+<p id="out"></p>
+
+
+
+
+<script>
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
+var n = 0;
+var m = 0;
+var ans1 = new Array(100001);
+var ans2 = new Array(100001);
+var cur = 0;
+var width = 960, height = 500, colors = d3.scale.category10();
+var charge = -500;
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+function create () {
+  svg.selectAll(".link, .node").remove();
+  n = parseInt(d3.select("#N").property("value"),10);
+  m = parseInt(d3.select("#M").property("value"),10);
+  
+  randomGraph(n, m, charge);
+  var text = '';
+  for(var i=0;i<cur;i++)
+  {
+    text += ans1[i] + ' ' + ans2[i] + '\n';
+  }
+  document.getElementById("#out").innerText = text;
+}
+function randomGraph (n, m, charge) { //creates a random graph on n nodes and m links
+  var nodes = d3.range(n).map(Object),
+      list  = randomChoose(unorderedPairs(d3.range(n)), m),
+      links = list.map(function (a) {
+                          ans1[cur] = a[0];
+                          ans2[cur]=a[1];
+                          cur++;
+                          return {source: a[0], target: a[1]} });
+  var force = d3.layout.force()
+      .size([width, height])
+      .nodes(nodes)
+      .links(links)
+      .charge(charge)
+      .on("tick", tick)
+      .start();
+  var svgLinks = svg.selectAll(".link").data(links)
+    .enter().append("line")
+      .attr("class", "link");
+  var svgNodes = svg.selectAll(".node").data(nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", 3)
+      .style("fill", "white");
+  svgNodes.transition().duration(800)
+    .attr("r", function (d) { return 10+d.weight })
+    .style("fill", function (d) { return colors(d.weight) });
+  svgLinks.transition().duration(800)
+      .style("stroke-width", 2);
+  function tick () {
+    svgNodes
+        .attr("cx", function(d) { return d.x })
+        .attr("cy", function(d) { return d.y });
+    svgLinks
+        .attr("x1", function(d) { return d.source.x })
+        .attr("y1", function(d) { return d.source.y })
+        .attr("x2", function(d) { return d.target.x })
+        .attr("y2", function(d) { return d.target.y });
+  }
+}
+function randomChoose (s, k) { // returns a random k element subset of s
+  var a = [], i = -1, j;
+  while (++i < k) {
+    j = Math.floor(Math.random() * s.length);
+    a.push(s.splice(j, 1)[0]);
+  };
+  return a;
+}
+function unorderedPairs (s) { // returns the list of all unordered pairs from s
+  var i = -1, a = [], j;
+  while (++i < s.length) {
+    j = i;
+    while (++j < s.length) a.push([s[i],s[j]])
+  };
+  return a;
+}
+</script>
+
 </body>
 </html>
