@@ -8,15 +8,17 @@
 
 <link rel="stylesheet" href="st.css">
 <body>
-  <div>
+  <div class="left">
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <input type="text" id = "N">
   <input type="text" id="M">
   <button onclick = "create()"> Generate </button>
-  
+  <svg width=960 height=700></svg>
 </div>
-
-<p id="out"></p>
+<div class="right">
+  <p class="st"></p>
+  <p class="nd"></p>
+</div>
 
 
 
@@ -31,29 +33,29 @@ var ans1 = new Array(100001);
 var ans2 = new Array(100001);
 var cur = 0;
 var width = 960, height = 500, colors = d3.scale.category10();
-var charge = -500;
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+var charge = -2000;
+var svg = d3.select("body").select("svg");
 function create () {
   svg.selectAll(".link, .node").remove();
   n = parseInt(d3.select("#N").property("value"),10);
   m = parseInt(d3.select("#M").property("value"),10);
+  var text = "";
+  d3.select("body").select(".st").html(text);
   
   randomGraph(n, m, charge);
-  var text = '';
   for(var i=0;i<cur;i++)
   {
-    text += ans1[i] + ' ' + ans2[i] + '\n';
+    text += ans1[i]+ ' ' +ans2[i] + "</br>";
+  //  var sd = d3.select("body").select(".right").append("p").text(ans1[i] + ' ' + ans2[i])
   }
-  document.getElementById("#out").innerText = text;
+  d3.select('body').select(".st").html(text);
 }
 function randomGraph (n, m, charge) { //creates a random graph on n nodes and m links
   var nodes = d3.range(n).map(Object),
       list  = randomChoose(unorderedPairs(d3.range(n)), m),
       links = list.map(function (a) {
-                          ans1[cur] = a[0];
-                          ans2[cur]=a[1];
+                          ans1[cur] = a[0]+1;
+                          ans2[cur]=a[1]+1;
                           cur++;
                           return {source: a[0], target: a[1]} });
   var force = d3.layout.force()
@@ -71,11 +73,9 @@ function randomGraph (n, m, charge) { //creates a random graph on n nodes and m 
       .attr("class", "node")
       .attr("r", 3)
       .style("fill", "white");
-  svgNodes.transition().duration(800)
-    .attr("r", function (d) { return 10+d.weight })
+  svgNodes.attr("r", function (d) { return 10+d.weight })
     .style("fill", function (d) { return colors(d.weight) });
-  svgLinks.transition().duration(800)
-      .style("stroke-width", 2);
+  svgLinks.style("stroke-width", 2);
   function tick () {
     svgNodes
         .attr("cx", function(d) { return d.x })
