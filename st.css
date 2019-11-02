@@ -1,3 +1,6 @@
+.left {
+    display: block;
+}
 body {
     padding: 0;
     margin: 50px 100px 0 50px;
@@ -27,11 +30,9 @@ svg {
     border: 2px solid black;
 }
 
-.left {
-}
 .right {
     display: flex;
-    width: 100px;
+    width: 200px;
     margin-right: 100px;
     padding: 0;
 }
