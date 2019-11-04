@@ -56,8 +56,8 @@ function randomGraph (n, m, charge) { //creates a random graph on n nodes and m 
   var nodes = d3.range(n).map(Object),
       list  = randomChoose(unorderedPairs(d3.range(n)), m),
       links = list.map(function (a) {
-                          ans1[cur] = a[0];
-                          ans2[cur]=a[1];
+                          ans1[cur]=a[0]+1;
+                          ans2[cur]=a[1]+1;
                           cur++;
                           return {source: a[0], target: a[1]} });
   var force = d3.layout.force()
